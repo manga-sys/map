@@ -23,14 +23,6 @@ document.addEventListener('DOMContentLoaded', function () {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
 
-    var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '© OpenStreetMap'
-    });
-
-    var osmHOT = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '© OpenStreetMap contributors, Tiles style by Humanitarian OpenStreetMap Team hosted by OpenStreetMap France'});
 
 
 
@@ -345,6 +337,8 @@ legend.addTo(map);
 
     var mrts = L.layerGroup([marker1, marker2, marker3, marker4, marker5, marker6, marker7
       , marker8, marker9, marker10, marker11, marker12, marker13, marker14, marker15, marker16, marker17, marker18, marker19, marker20, marker21, marker22, marker23, marker24, marker25, marker26, marker27, marker28, marker29, marker30, marker31, marker32, marker33, marker34, marker35, marker37, marker38, marker39, marker40, marker41, marker42, marker43, marker44])
+
+      
     
   
         let greenIcon = new L.Icon({
@@ -359,20 +353,21 @@ legend.addTo(map);
     
         function onEachFeature(feature, layer) {
           if (feature.properties && feature.properties.Description) {
-              layer.bindPopup(feature.properties.Description);
+            layer.bindPopup(feature.properties.Description);
           }
-      }
-  
-            L.geoJSON(geoJsonData, {
-              onEachFeature: onEachFeature
-          }).addTo(map);
-  
-          L.geoJSON(geoJsonData, {
-              onEachFeature: onEachFeature,
-              pointToLayer: function (feature, latlng) {
-                  return L.marker(latlng, { icon: greenIcon });
-              }
-          }).addTo(map);
+        }
+        
+        // Create the GeoJSON layer with custom icons and popups
+        var geoJsonLayer = L.geoJSON(geoJsonData, {
+          onEachFeature: onEachFeature, // Bind the popup to each feature
+          pointToLayer: function (feature, latlng) {
+            // Apply custom green icon for each marker
+            return L.marker(latlng, { icon: greenIcon });
+          }
+        });
+
+        
+        geoJsonLayer.addTo(map);
 
           var searchBar = L.control.pinSearch({
             position: 'topright',
@@ -399,6 +394,17 @@ legend.addTo(map);
             searchBarHeight: '30px',
             maxSearchResults: 1
         }).addTo(map);
+
+
+              var overlayMaps = {
+                "DO NOT CLICK! Refresh if clicked": mrts,
+                "lol": geoJsonLayer
+            };
+            
+            var layerControl = L.control.layers().addTo(map);
+            layerControl.addOverlay(mrts, "MRT Stations");
+            layerControl.addOverlay(geoJsonLayer, "lol");
+
 
       
         
