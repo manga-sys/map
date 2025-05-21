@@ -1,7 +1,7 @@
-document.addEventListener('DOMContentLoaded', function () {
-    let password = prompt("Please enter the password to access this interactive map:");
+//document.addEventListener('DOMContentLoaded', function () {
+    //let password = prompt("Please enter the password to access this interactive map:");
   
-    if (password === "imcc123") {
+    //if (password === "imcc123") {
       alert("Access granted. Welcome!.");
 
       
@@ -524,6 +524,136 @@ fetch('https://api-open.data.gov.sg/v2/real-time/api/weather?api=wbgt')
 
 
 
+  fetch('https://api-open.data.gov.sg/v2/real-time/api/air-temperature')
+  .then(ree => ree.json())
+  .then(dee => {
+    const gee = ((xee) => {
+      const stations = xee.data.stations;
+      const readings = xee.data.readings?.[0]?.data || [];
+      const timestamp = xee.data.readings?.[0]?.timestamp;
+
+      const zee = {
+        type: "FeatureCollection",
+        features: []
+      };
+
+      readings.forEach(reading => {
+        const station = stations.find(st => st.id === reading.stationId);
+        if (station) {
+          zee.features.push({
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [
+                parseFloat(station.location.longitude),
+                parseFloat(station.location.latitude)
+              ]
+            },
+            properties: {
+              stationId: station.id,
+              name: station.name,
+              temperature: parseFloat(reading.value),
+              timestamp: timestamp
+            }
+          });
+        }
+      });
+
+      return zee;
+    })(dee);
+
+    const lee = L.geoJSON(gee, {
+      pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng, {
+          radius: 20,
+          fillColor: "orange",
+          color: "white",
+          weight: 5,
+          opacity: 1,
+          fillOpacity: 0.7
+        });
+      },
+
+      onEachFeature: function (fee, lyree) {
+        lyree.bindPopup(`
+          <b>${fee.properties.name}</b><br>
+          Temperature: ${fee.properties.temperature} °C<br>
+          Timestamp: ${fee.properties.timestamp}
+        `);
+      }
+    }).addTo(map);
+
+    layerControl.addOverlay(lee, "Temperature");
+  })
+  .catch(eee => console.error('Error fetching the data:', eee));
+
+
+
+  fetch('https://api-open.data.gov.sg/v2/real-time/api/relative-humidity')
+  .then(reee => reee.json())
+  .then(deee => {
+    const geee = ((xeee) => {
+      const stations = xeee.data.stations;
+      const readings = xeee.data.readings?.[0]?.data || [];
+      const timestamp = xeee.data.readings?.[0]?.timestamp;
+
+      const zeee = {
+        type: "FeatureCollection",
+        features: []
+      };
+
+      readings.forEach(reading => {
+        const station = stations.find(st => st.id === reading.stationId);
+        if (station) {
+          zeee.features.push({
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [
+                parseFloat(station.location.longitude),
+                parseFloat(station.location.latitude)
+              ]
+            },
+            properties: {
+              stationId: station.id,
+              name: station.name,
+              humidity: parseFloat(reading.value),
+              timestamp: timestamp
+            }
+          });
+        }
+      });
+
+      return zeee;
+    })(deee);
+
+    const leee = L.geoJSON(geee, {
+      pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng, {
+          radius: 20,
+          fillColor: "purple",
+          color: "white",
+          weight: 5,
+          opacity: 1,
+          fillOpacity: 0.7
+        });
+      },
+
+      onEachFeature: function (feee, lyreee) {
+        lyreee.bindPopup(`
+          <b>${feee.properties.name}</b><br>
+          Humidity: ${feee.properties.humidity} %<br>
+          Timestamp: ${feee.properties.timestamp}
+        `);
+      }
+    }).addTo(map);
+
+    layerControl.addOverlay(leee, "Humidity");
+  })
+  .catch(eeee => console.error('Error fetching the data:', eeee));
+
+
+
 var layerControl = L.control.layers().addTo(map);
 layerControl.addOverlay(mrts, "MRT Stations");
 layerControl.addOverlay(geoJsonLayer, "Water Canal");
@@ -531,9 +661,9 @@ layerControl.addOverlay(geoJsonLayer, "Water Canal");
 
 
 
-    } else {
-      alert("Incorrect password. Please try again!.");
-      document.body.innerHTML = "<h1 style='text-align:center;'>Access denied. Please refresh this page to try again! 😁 </h1>";
-    }
-  });
+   // } else {
+    //  alert("Incorrect password. Please try again!.");
+    //  document.body.innerHTML = "<h1 style='text-align:center;'>Access denied. Please refresh this page to try again! 😁 </h1>";
+  //  }
+ // });
 
