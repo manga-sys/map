@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
       
         onRemove: function(map) {
-          // Nothing to do here
+
         }
       });
       
@@ -415,7 +415,7 @@ legend.addTo(map);
     const geoJsonData2 = convertToGeoJSON(data);
 
 
-var rainfallapi=   L.geoJSON(geoJsonData2, {
+var rainfallapi =   L.geoJSON(geoJsonData2, {
       onEachFeature: function (feature, layer) {
 
         layer.bindPopup(`<b>${feature.properties.name}</b><br>Rainfall: ${feature.properties.rainfall} mm`);
@@ -463,11 +463,73 @@ function convertToGeoJSON(data) {
   return geojson;
 }
 
+
+
+fetch('https://api-open.data.gov.sg/v2/real-time/api/weather?api=wbgt')
+  .then(r => r.json())
+  .then(d => {
+    const g = ((x) => {
+      const y = x.data.records[0].item.readings;
+      const z = {
+        type: "FeatureCollection",
+        features: []
+      };
+      y.forEach(a => {
+        z.features.push({
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [
+              parseFloat(a.location.longitude),
+              parseFloat(a.location.latitude)
+            ]
+          },
+          properties: {
+            stationId: a.station.id,
+            name: a.station.name,
+            wbgt: parseFloat(a.wbgt),
+            heatStress: a.heatStress,
+            timestamp: x.data.records[0].datetime
+          }
+        });
+      });
+      return z;
+    })(d);
+
+    const l = L.geoJSON(g, {
+      pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng, {
+          radius: 20,
+          fillColor: "yellow",
+          color: "lightyellow",
+          weight: 5,
+          opacity: 2,
+          fillOpacity: 0.7
+        });
+      },
+
+      onEachFeature: function (f, lyr) {
+        lyr.bindPopup(`
+          <b>${f.properties.name}</b><br>
+          WBGT: ${f.properties.wbgt} °C<br>
+          Heat Stress: ${f.properties.heatStress}
+        `);
+      }
+    }).addTo(map);
+
+    layerControl.addOverlay(l, "WBGT");
+  })
+  .catch(e => console.error('Error fetching the data:', e));
+
+
+
+
 var layerControl = L.control.layers().addTo(map);
 layerControl.addOverlay(mrts, "MRT Stations");
 layerControl.addOverlay(geoJsonLayer, "Water Canal");
-layerControl.addOverlay(rainfallapi, "Rainfall");
-      
+
+
+
 
     } else {
       alert("Incorrect password. Please try again!.");
