@@ -21,11 +21,25 @@
       height: 800px;
     }
 
+    .leaflet-layer,
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out,
+.leaflet-control-attribution {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+
+.leaflet-control-messagebox {
+	display: none; /* Initially hidden */
+	border: 2px solid red;
+	background-color: white;
+	padding: 3px 10px;
+}
+
   </style>
 </head>
 <body>
 
-  <script src="notification.js"></script>
+
 
   <div id="map"></div>
 
@@ -43,7 +57,6 @@
   <script src="geojson.js"></script>
 
   <script src="map.js"></script>
-
  
   
 </body>
