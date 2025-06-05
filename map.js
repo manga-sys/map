@@ -2,11 +2,9 @@
   // let password = window.prompt("Please enter the password to access this interactive map:");
   // if (password === "imcc123") {
   //     alert("Access granted. Welcome!.");
-
-
+  const seriousalarm = document.getElementById("seriousalarm");
       console.log('guthrie govan is the greatest')
     
-      
       let map = L.map("map", {
         center: [1.346263692149523, 103.8421901127227],
         zoom: 12,
@@ -690,54 +688,22 @@ layerControl.addOverlay(geoJsonLayer, "Water Canal");
 
 console.log("If you see this, I want you to know to have a nice day!")
 
-L.Control.Messagebox = L.Control.extend({
-  options: {
-      position: 'topright',
-      timeout: 3000
-  },
-
-  onAdd: function (map) {
-      this._container = L.DomUtil.create('div', 'leaflet-control-messagebox');
-      //L.DomEvent.disableClickPropagation(this._container);
-      return this._container;
-  },
-
-  show: function (message, timeout) {
-      var elem = this._container;
-      elem.innerHTML = message;
-      elem.style.display = 'block';
-
-      timeout = timeout || this.options.timeout;
-
-      if (typeof this.timeoutID == 'number') {
-          clearTimeout(this.timeoutID);
-      }
-      this.timeoutID = setTimeout(function () {
-          elem.style.display = 'none';
-      }, timeout);
-  }
-});
-
-L.Map.mergeOptions({
-  messagebox: false
-});
-
-L.Map.addInitHook(function () {
-  if (this.options.messagebox) {
-      this.messagebox = new L.Control.Messagebox();
-      this.addControl(this.messagebox);
-  }
-});
-
-L.control.messagebox = function (options) {
-  return new L.Control.Messagebox(options);
-};
 
 
-//    } else {
+fetch("http://localhost:3000/api/waterlevel")
+  .then((response) => response.text())
+  .then((results) => console.log(results))
+  .catch((error) => console.error(error));
+
+waterlevel=75
+
+if (waterlevel >=75){
+  seriousalarm.play();
+  alert("testing")
+}
+
+//      } else {
 //      alert("Incorrect password. Please try again!.");
 //      document.body.innerHTML = "<h1 style='text-align:center;'>Access denied. Please refresh this page to try again! 😁 </h1>";
 //    }
-//  });s
-
-
+//  });
