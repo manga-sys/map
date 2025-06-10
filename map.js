@@ -1,11 +1,15 @@
-  // document.addEventListener('DOMContentLoaded', function () {
-  // let password = window.prompt("Please enter the password to access this interactive map:");
-  // if (password === "imcc123") {
-  //     alert("Access granted. Welcome!.");
+   document.addEventListener('DOMContentLoaded', function () {
+   //let password = window.prompt("Please enter the password to access this interactive map:");
+   //if (password === "imcc123") {
+       //alert("Access granted. Welcome!.");
       const seriousalarm = document.getElementById("seriousalarm"); //pulls audio from html
       const modal = document.getElementById("modal"); // pulls modal from html
       const popupclose = document.getElementById("popupclose"); // pulls popupclose button from html
-
+      const acknowledgement = document.getElementById("acknowledgement");
+      const seriousalarm2 = document.getElementById("seriousalarm2"); //pulls audio from html
+      const modal2 = document.getElementById("modal2"); // pulls modal from html
+      const popupclose2 = document.getElementById("popupclose2"); // pulls popupclose button from html
+      const acknowledgement2 = document.getElementById("acknowledgement2");
       console.log('guthrie govan is the greatest')
     
       let map = L.map("map", {                            // -initializing the map
@@ -198,7 +202,7 @@ legend.onAdd = function (map) {                                  // Legends
 legend.addTo(map);
 
       
-    let markers=[]                               // Train marker for NSEWL
+    let markers=[]  // Train marker for NSEWL
 
     
     var marker1 = L.marker([1.2767494463710582, 103.84517652301709],{ icon: trainIconOrange, title: 'Tanjong Pagar MRT Station' }).addTo(map);
@@ -376,7 +380,7 @@ legend.addTo(map);
     var mrts = L.layerGroup([marker1, marker2, marker3, marker4, marker5, marker6, marker7
       , marker8, marker9, marker10, marker11, marker12, marker13, marker14, marker15, marker16, marker17, marker18, marker19, marker20, marker21, marker22, marker23, marker24, marker25, marker26, marker27, marker28, marker29, marker30, marker31, marker32, marker33, marker34, marker35, marker37, marker38, marker39, marker40, marker41, marker42, marker43, marker44])
 
-      
+      mrts.addTo(map);
     
   
         let greenIcon = new L.Icon({                 // Initializing green icon
@@ -388,6 +392,23 @@ legend.addTo(map);
           shadowSize: [30, 30]
         });
         
+        let redIcon = new L.Icon({                 // Initializing green icon
+          iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+          iconSize: [25, 41],       
+          iconAnchor: [12, 41],    
+          popupAnchor: [1, -34],    
+          shadowSize: [30, 30]
+        });
+
+        let yellowIcon = new L.Icon({                 // Initializing green icon
+          iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png',
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+          iconSize: [25, 41],       
+          iconAnchor: [12, 41],    
+          popupAnchor: [1, -34],    
+          shadowSize: [30, 30]
+        });
     
         function onEachFeature(feature, layer) {
           if (feature.properties && feature.properties.Description) {
@@ -396,17 +417,6 @@ legend.addTo(map);
         }
         
 
-        var geoJsonLayer = L.geoJSON(geoJsonData, {
-          onEachFeature: onEachFeature, 
-          pointToLayer: function (feature, latlng) {
-
-            return L.marker(latlng, { icon: greenIcon });
-          }
-        });
-
-        
-        geoJsonLayer.addTo(map);
-
           var searchBar = L.control.pinSearch({             // Adding search bar
             position: 'topright',
             placeholder: 'Search and click on the station',
@@ -414,11 +424,12 @@ legend.addTo(map);
             onSearch: function(query) {
               console.log('Search query:', query);
               let found = false;
+              
 
               markers.forEach(marker => {
                   const title = marker.options.title || '';
                   if (title.toLowerCase().includes(query.toLowerCase())) {
-                      map.setView(marker.getLatLng(), 15);
+                      map.setView(marker.getLatLng(), 13.5);
                       marker.openPopup();
                       found = true;
                   }
@@ -427,10 +438,12 @@ legend.addTo(map);
               if (!found) {
                   alert('No matching station found.');
               }
+              
             },
             searchBarWidth: '200px',
             searchBarHeight: '30px',
-            maxSearchResults: 1
+            maxSearchResults: 3
+
         }).addTo(map);
 
 
@@ -438,35 +451,35 @@ legend.addTo(map);
 
 
             
-            fetch('https://api-open.data.gov.sg/v2/real-time/api/rainfall') //Implementing Rainfall API
-  .then(response => response.json())
-  .then(data => {
+      fetch('https://api-open.data.gov.sg/v2/real-time/api/rainfall') //Implementing Rainfall API
+      .then(response => response.json())
+      .then(data => {
 
-    const geoJsonData2 = convertToGeoJSON(data);
-
-
-var rainfallapi =   L.geoJSON(geoJsonData2, {
-      onEachFeature: function (feature, layer) {
-
-        layer.bindPopup(`<b>${feature.properties.name}</b><br>Rainfall: ${feature.properties.rainfall} mm`);
-      }
-    }).addTo(map);
-
-    layerControl.addOverlay(rainfallapi, "Rainfall");
-
-  })
-  .catch(error => console.error('Error fetching the data:', error));
+        const geoJsonData2 = convertToGeoJSON(data);
 
 
+        var rainfallapi =   L.geoJSON(geoJsonData2, {
+              onEachFeature: function (feature, layer) {
 
-function convertToGeoJSON(data) {
-  const stations = data.data.stations;
-  const readings = data.data.readings[0].data;
+                layer.bindPopup(`<b>${feature.properties.name}</b><br>Rainfall: ${feature.properties.rainfall} mm`);
+              }
+            }).addTo(map);
 
-  const geojson = {
-    type: "FeatureCollection",
-    features: []
-  };
+            layerControl.addOverlay(rainfallapi, "Rainfall");
+
+          })
+          .catch(error => console.error('Error fetching the data:', error));
+
+
+
+    function convertToGeoJSON(data) {
+      const stations = data.data.stations;
+      const readings = data.data.readings[0].data;
+
+      const geojson = {
+        type: "FeatureCollection",
+        features: []
+      };
 
 
   stations.forEach(station => {
@@ -487,44 +500,44 @@ function convertToGeoJSON(data) {
       }
     };
 
-    geojson.features.push(feature);
-  });
-
-  return geojson;
-}
-
-
-
-fetch('https://api-open.data.gov.sg/v2/real-time/api/weather?api=wbgt') // Implementing WBGT API
-  .then(r => r.json())
-  .then(d => {
-    const g = ((x) => {
-      const y = x.data.records[0].item.readings;
-      const z = {
-        type: "FeatureCollection",
-        features: []
-      };
-      y.forEach(a => {
-        z.features.push({
-          type: "Feature",
-          geometry: {
-            type: "Point",
-            coordinates: [
-              parseFloat(a.location.longitude),
-              parseFloat(a.location.latitude)
-            ]
-          },
-          properties: {
-            stationId: a.station.id,
-            name: a.station.name,
-            wbgt: parseFloat(a.wbgt),
-            heatStress: a.heatStress,
-            timestamp: x.data.records[0].datetime
-          }
-        });
+        geojson.features.push(feature);
       });
-      return z;
-    })(d);
+
+      return geojson;
+    }
+
+
+
+      fetch('https://api-open.data.gov.sg/v2/real-time/api/weather?api=wbgt') // Implementing WBGT API
+        .then(r => r.json())
+        .then(d => {
+          const g = ((x) => {
+            const y = x.data.records[0].item.readings;
+            const z = {
+              type: "FeatureCollection",
+              features: []
+            };
+            y.forEach(a => {
+              z.features.push({
+                type: "Feature",
+                geometry: {
+                  type: "Point",
+                  coordinates: [
+                    parseFloat(a.location.longitude),
+                    parseFloat(a.location.latitude)
+                  ]
+                },
+                properties: {
+                  stationId: a.station.id,
+                  name: a.station.name,
+                  wbgt: parseFloat(a.wbgt),
+                  heatStress: a.heatStress,
+                  timestamp: x.data.records[0].datetime
+                }
+              });
+            });
+            return z;
+          })(d);
 
     const l = L.geoJSON(g, {
       pointToLayer: function (feature, latlng) {
@@ -545,27 +558,27 @@ fetch('https://api-open.data.gov.sg/v2/real-time/api/weather?api=wbgt') // Imple
           Heat Stress: ${f.properties.heatStress}
         `);
       }
-    }).addTo(map);
+      }).addTo(map);
 
-    layerControl.addOverlay(l, "WBGT");
-  })
-  .catch(e => console.error('Error fetching the data:', e));
-
-
+      layerControl.addOverlay(l, "WBGT");
+      })
+      .catch(e => console.error('Error fetching the data:', e));
 
 
-  fetch('https://api-open.data.gov.sg/v2/real-time/api/air-temperature') // Implementing Air Temperature API
-  .then(ree => ree.json())
-  .then(dee => {
-    const gee = ((xee) => {
-      const stations = xee.data.stations;
-      const readings = xee.data.readings?.[0]?.data || [];
-      const timestamp = xee.data.readings?.[0]?.timestamp;
 
-      const zee = {
-        type: "FeatureCollection",
-        features: []
-      };
+
+      fetch('https://api-open.data.gov.sg/v2/real-time/api/air-temperature') // Implementing Air Temperature API
+      .then(ree => ree.json())
+      .then(dee => {
+        const gee = ((xee) => {
+          const stations = xee.data.stations;
+          const readings = xee.data.readings?.[0]?.data || [];
+          const timestamp = xee.data.readings?.[0]?.timestamp;
+
+          const zee = {
+            type: "FeatureCollection",
+            features: []
+        };
 
       readings.forEach(reading => {
         const station = stations.find(st => st.id === reading.stationId);
@@ -592,7 +605,7 @@ fetch('https://api-open.data.gov.sg/v2/real-time/api/weather?api=wbgt') // Imple
       return zee;
     })(dee);
 
-    const lee = L.geoJSON(gee, {
+      const lee = L.geoJSON(gee, {
       pointToLayer: function (feature, latlng) {
         return L.circleMarker(latlng, {
           radius: 20,
@@ -611,26 +624,26 @@ fetch('https://api-open.data.gov.sg/v2/real-time/api/weather?api=wbgt') // Imple
           Timestamp: ${fee.properties.timestamp}
         `);
       }
-    }).addTo(map);
+      }).addTo(map);
 
-    layerControl.addOverlay(lee, "Temperature");
-  })
-  .catch(eee => console.error('Error fetching the data:', eee));
+        layerControl.addOverlay(lee, "Temperature");
+      })
+      .catch(eee => console.error('Error fetching the data:', eee));
 
 
 
-  fetch('https://api-open.data.gov.sg/v2/real-time/api/relative-humidity') // Implementing humidity API
-  .then(reee => reee.json())
-  .then(deee => {
-    const geee = ((xeee) => {
-      const stations = xeee.data.stations;
-      const readings = xeee.data.readings?.[0]?.data || [];
-      const timestamp = xeee.data.readings?.[0]?.timestamp;
+    fetch('https://api-open.data.gov.sg/v2/real-time/api/relative-humidity') // Implementing humidity API
+    .then(reee => reee.json())
+    .then(deee => {
+      const geee = ((xeee) => {
+        const stations = xeee.data.stations;
+        const readings = xeee.data.readings?.[0]?.data || [];
+        const timestamp = xeee.data.readings?.[0]?.timestamp;
 
-      const zeee = {
-        type: "FeatureCollection",
-        features: []
-      };
+        const zeee = {
+          type: "FeatureCollection",
+          features: []
+        };
 
       readings.forEach(reading => {
         const station = stations.find(st => st.id === reading.stationId);
@@ -676,43 +689,101 @@ fetch('https://api-open.data.gov.sg/v2/real-time/api/weather?api=wbgt') // Imple
           Timestamp: ${feee.properties.timestamp}
         `);
       }
-    }).addTo(map);
+      }).addTo(map);
 
-    layerControl.addOverlay(leee, "Humidity");
-  })
-  .catch(eeee => console.error('Error fetching the data:', eeee));
+      layerControl.addOverlay(leee, "Humidity");
+      })
+      .catch(eeee => console.error('Error fetching the data:', eeee));
 
 
   
 var layerControl = L.control.layers().addTo(map);
 layerControl.addOverlay(mrts, "MRT Stations");
-layerControl.addOverlay(geoJsonLayer, "Water Canal");
+
 
 
 console.log("If you see this, I want you to know to have a nice day!")
 
 
 
-fetch("http://localhost:3000/api/waterlevel")  // Implementing Water Canal Level Sensor API
-  .then((response) => response.text())
-  .then((results) => console.log(results))
-  .catch((error) => console.error(error));
+
+popupclose.addEventListener("click", () => { // Close modal and stop alarm
+  modal.style.display = "none";
+  modal2.style.display = "none";
+  seriousalarm.pause();
+});
+
+popupclose2.addEventListener("click", () => { // Close modal and stop alarm
+  modal2.style.display = "none";
+  seriousalarm.pause();
+});
 
 
+
+fetch("http://localhost:3000/api/waterlevel")
+  .then(res => res.text())
+  .then(str => {
+    if (str.startsWith('"') && str.endsWith('"')) {
+      str = str.slice(1, -1);
+    }
+    return str;
+  })
+  .then(str => {
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(str, "application/xml");
+    return xml;
+  })
+ 
+  .then(xml => {
+    const highestlevel= 10
+    const waterCanalLayerYellow = L.layerGroup().addTo(map);
+    const waterCanalLayerGreen = L.layerGroup().addTo(map);
+    const waterCanalLayerRed = L.layerGroup().addTo(map);
+    const stations = Array.from(xml.getElementsByTagName("StationInfo"));
+    stations.forEach(station => {
+      const name = station.getElementsByTagName("StationName")[0]?.textContent || "";
+      const latit = parseFloat(station.getElementsByTagName("Lat")[0]?.textContent);
+      const longit = parseFloat(station.getElementsByTagName("Lon")[0]?.textContent);
+      let waterLevel = station.getElementsByTagName("WaterLevel")[0]?.textContent || "N/A";
+      let waterlevelpercentage= (waterLevel/highestlevel * 100);
+      let finalwaterlevelpercentage = waterlevelpercentage.toFixed(2)
+      let watercanaldata= L.marker([latit, longit], { icon: greenIcon })
+          .addTo(map)
+          .bindPopup(`<b>${name}<b><br><u>Water Level: ${finalwaterlevelpercentage}%<br><u><b>`);
+          waterCanalLayerGreen.addLayer(watercanaldata);
+
+
+      if (finalwaterlevelpercentage >=3 && finalwaterlevelpercentage <=74){
+        modal2.style.display = "flex";
+        seriousalarm.play();
+        let watercanaldata= L.marker([latit, longit], { icon: yellowIcon })
+        .addTo(map)
+        .bindPopup(`<b>${name}<b><br><u>Water Level: ${finalwaterlevelpercentage}%<br><u><b>`);
+        waterCanalLayerYellow.addLayer(watercanaldata);
+      }
+      
+      if (finalwaterlevelpercentage >= 75){
+        modal.style.display = "flex";
+        seriousalarm.play();
+        let watercanaldata= L.marker([latit, longit], { icon: redIcon })
+        .addTo(map)
+        .bindPopup(`<b>${name}<b><br><u>Water Level: ${finalwaterlevelpercentage}%<br><u><b>`);
+        waterCanalLayerRed.addLayer(watercanaldata);
+        
+
+      }
   
-  map.on("click", () => {
-    modal.style.display = "flex";         // Show modal
-    seriousalarm.play();
-  });
 
-  
-  popupclose.addEventListener("click", () => { // Close modal and stop alarm
-    modal.style.display = "none";
-    seriousalarm.pause();
-  });
+    });
+    layerControl.addOverlay(waterCanalLayerRed, "<b>Water Canal (RED) KEEP ON IF THERE IS AN EMERGENCY</b>");
+    layerControl.addOverlay(waterCanalLayerYellow, "<b>Water Canal (YELLOW) UNCHECK IF THERE IS AN EMERGENCY</b>");
+    layerControl.addOverlay(waterCanalLayerGreen, "<b>Water Canal (GREEN) UNCHECK IF THERE IS AN EMERGENCY</b>");
+  })
+
+
 
 //      } else {
 //      alert("Incorrect password. Please try again!.");
-//      document.body.innerHTML = "<h1 style='text-align:center;'>Access denied. Please refresh this page to try again! 😁 </h1>";
-//    }
-//  });
+ //     document.body.innerHTML = "<h1 style='text-align:center;'>Access denied. Please refresh this page to try again! 😁 </h1>";
+ //   }
+  });
